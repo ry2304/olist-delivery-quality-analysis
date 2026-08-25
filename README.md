@@ -153,8 +153,8 @@ concern rather than a delivery symptom.
 
 This project uses the [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 (Kaggle). The raw dataset is not included in this repository — see
-`documentation/data-model.md` for details on the tables used and how
-they were transformed.
+[`documentation/data-model.md`](documentation/data-model.md) for
+details on the tables used and how they were transformed.
 
 ---
 
