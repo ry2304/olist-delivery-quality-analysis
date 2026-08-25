@@ -94,13 +94,16 @@ final metric validation against the Power BI DAX measures.
 Built the reporting model and developed measures for:
 
 - On-Time Delivery Rate
-- Average Review Score
-- Repeat Purchase Rate
-- Revenue at Risk
+- Avg Review Score
+- Repeat Customer Rate
 - Total Revenue
 - Total Orders
-- State-level delivery variance
-- Category-level review performance
+- Revenue at Risk
+- Variance from Avg (state-level delivery benchmark comparison)
+
+The full set of measures — including revenue decomposition, customer
+segmentation, and category-quality support measures — is documented in
+[`dax/measures.md`](dax/measures.md).
 
 ---
 
