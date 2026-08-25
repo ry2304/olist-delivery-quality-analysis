@@ -83,6 +83,12 @@ Created two analytical views:
 The SQL layer also handles review deduplication, payment aggregation,
 and delivery-status derivation.
 
+The `sql/` folder preserves the full analytical trail — from the
+production views, through data-quality checks (including a
+review-deduplication bug caught and fixed during development), to
+the queries behind the state and category prioritization and the
+final metric validation against the Power BI DAX measures.
+
 ### Power BI / DAX
 
 Built the reporting model and developed measures for:
@@ -163,7 +169,11 @@ olist-delivery-quality-analysis/
 │       ├── quality-category.png
 │       └── recommendations.png
 ├── sql/
-│   └── final_views.sql
+│   ├── 01_final_views.sql
+│   ├── 02_data_quality_investigation.sql
+│   ├── 03_state_priority_analysis.sql
+│   ├── 04_category_quality_analysis.sql
+│   └── 05_metric_validation.sql
 ├── dax/
 │   └── measures.md
 └── documentation/
