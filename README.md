@@ -1,27 +1,12 @@
 # Olist Delivery & Quality Analysis
 
-An end-to-end data analysis project using SQL Server, Power BI, DAX,
-and Power Query to evaluate delivery reliability, revenue exposure,
-customer satisfaction, and product-category quality across Olist's
-e-commerce marketplace.
+**SQL Server · Power BI · DAX · Power Query**
 
----
+An end-to-end analysis of Olist's e-commerce operations focused on
+delivery reliability, revenue exposure, customer satisfaction, and
+product-category quality.
 
-## Business Problem
-
-Olist's overall delivery performance appears strong at the national
-level, but aggregate performance can hide meaningful differences across
-states, delivery outcomes, and product categories.
-
-This analysis investigates:
-
-- Where delivery performance is weakest
-- How much revenue is exposed to late or failed deliveries
-- How delivery outcomes relate to customer satisfaction
-- Which product categories have persistent review-score issues
-- Where Olist should prioritize operational and quality improvements
-
-### Decision
+## Business Question
 
 > Should Olist prioritize delivery logistics or product/seller quality
 > investment next quarter to improve customer satisfaction and repeat
@@ -29,80 +14,78 @@ This analysis investigates:
 
 ---
 
-# Analytical Approach
+## Key Findings
 
-The project follows an end-to-end analytics workflow:
-
-**Source Data**
-↓
-**SQL Server / SSMS**
-↓
-**Analytical Views**
-↓
-**Power BI Data Model**
-↓
-**DAX Measures**
-↓
-**Dashboard Analysis**
-↓
-**Business Recommendations**
-
----
-
-## 1. SQL Data Modeling
-
-SQL Server / SSMS was used to create reporting-ready analytical views
-before the data was brought into Power BI.
-
-### `fact_orders`
-
-The order-level analytical view combines:
-
-- Orders
-- Customers
-- Reviews
-- Payments
-
-The view also derives analytical fields including:
-
-- Delivery duration
-- Delivery status
-- Order-level payment value
-
-The review data is deduplicated by retaining the latest review record
-per order using `ROW_NUMBER()`.
-
-Payment values are aggregated to the order level before being joined to
-the order data.
-
-### `fact_order_items`
-
-The order-item analytical view combines:
-
-- Order items
-- Products
-- Product category translations
-
-It retains item-level fields including:
-
-- Product
-- Seller
-- Price
-- Freight value
-- Product category
-
-These two views provide separate analytical grains for order-level and
-order-item/category analysis.
+- **93.23%** of eligible orders were delivered on time.
+- **$1.74M (10.86%)** of total revenue is associated with deliveries
+  that were not on time.
+- Average review scores decline from **4.29** for on-time deliveries
+  to **2.27** for late deliveries and **1.75** for undelivered orders.
+- **RJ, BA, and ES** were prioritized for delivery intervention based
+  on below-benchmark performance and meaningful revenue exposure.
+- **Office Furniture** remains a quality concern, with a **3.62**
+  overall review score and **3.76** among on-time orders — indicating
+  the issue is not fully explained by delivery performance.
+- Repeat purchase rate sits at **3.12%**, which is low relative to
+  typical e-commerce benchmarks (commonly 10–30%+), suggesting
+  retention may warrant a separate investigation beyond delivery and
+  quality alone.
 
 ---
 
-## 2. Power BI & DAX
+## Recommendations
 
-The SQL views were imported into Power BI and used as the foundation
-for the reporting model.
+| Priority | Action |
+|---|---|
+| **P0** | Fix RJ delivery performance |
+| **P1** | Fix BA delivery performance |
+| **P2** | Fix ES delivery performance |
+| **P3** | Investigate Office Furniture quality |
 
-DAX was then used to create business-focused KPIs and analytical
-measures, including:
+The recommendations distinguish between **delivery problems** and
+**category-level quality problems**, rather than treating all customer
+satisfaction issues as logistics issues.
+
+---
+
+## Viewing the Dashboard
+
+Download `Olist_Delivery_Quality_Analysis.pbix` from the `dashboard/`
+folder and open it in [Power BI Desktop](https://www.microsoft.com/en-us/power-platform/products/power-bi/downloads)
+(free) to interact with filters, slicers, and drill-downs. Static
+previews of each page are below.
+
+### Overview
+![Overview](dashboard/screenshots/overview.png)
+
+### Delivery Performance
+![Delivery Performance](dashboard/screenshots/delivery-performance.png)
+
+### Quality & Category
+![Quality & Category](dashboard/screenshots/quality-category.png)
+
+### Recommendations
+![Recommendations](dashboard/screenshots/recommendations.png)
+
+---
+
+## Technical Approach
+
+### SQL Server / SSMS
+
+Created two analytical views:
+
+- `fact_orders` — order-level analysis integrating orders, customers,
+  reviews, and payments.
+- `fact_order_items` — order-item analysis integrating products and
+  category information.
+
+The SQL layer also handles review deduplication, payment aggregation,
+and delivery-status derivation.
+
+### Power BI / DAX
+
+Built the reporting model and developed measures for:
 
 - On-Time Delivery Rate
 - Average Review Score
@@ -110,272 +93,79 @@ measures, including:
 - Revenue at Risk
 - Total Revenue
 - Total Orders
-- Delivery variance from the national benchmark
-- Category-level review analysis
-- On-time-only review analysis
-
-The model was designed to support analysis across delivery status,
-customer state, product category, revenue, and customer satisfaction.
+- State-level delivery variance
+- Category-level review performance
 
 ---
 
-# Dashboard
+## What Was Hard
 
-The final dashboard consists of four pages.
-
----
-
-## 01 — Overview
-
-### Purpose
-
-Provide an executive-level view of Olist's delivery performance,
-customer satisfaction, revenue, and order activity.
-
-### Key Metrics
-
-- **93.23%** On-Time Delivery Rate
-- **4.09** Average Review Score
-- **3.12%** Repeat Purchase Rate
-- **$16.01M** Total Revenue
-- **99K+** Total Orders
-
-### Executive Takeaways
-
-**Strong Delivery Performance**
-
-93.23% of eligible orders were delivered on time, leaving a 6.77%
-delivery gap.
-
-**Meaningful Revenue Exposure**
-
-$1.74M, representing approximately 10.86% of total revenue, is
-associated with deliveries that were not on time.
-
-**Delivery Impacts Customer Satisfaction**
-
-Average review scores decline from:
-
-- 4.29 — On-time deliveries
-- 2.27 — Late deliveries
-- 1.75 — Undelivered orders
-
-This establishes the relationship between delivery performance,
-financial exposure, and customer experience.
+The most difficult part of this analysis was isolating **category-level
+quality issues** from **delivery-driven dissatisfaction**. Low review
+scores alone don't reveal their cause, since late deliveries and poor
+product quality both drag scores down in similar ways. To separate the
+two, review scores were re-calculated using **on-time orders only** —
+if a category's score stayed low even without delivery problems in the
+mix, that pointed to a quality issue rather than a logistics one. This
+is what confirmed Office Furniture as a genuine product/seller quality
+concern rather than a delivery symptom.
 
 ---
 
-## 02 — Delivery Performance
+## Limitations & Next Steps
 
-### Purpose
-
-Identify where delivery reliability is weakest and determine which
-states represent the greatest operational priority.
-
-### Key Findings
-
-- National on-time delivery rate: **93.23%**
-- RJ on-time delivery rate: **87.89%**
-- Revenue associated with late/not-on-time deliveries: **$1.74M**
-
-The state-level analysis compares delivery performance against the
-national benchmark and uses revenue exposure to distinguish
-higher-impact operational problems from lower-value exceptions.
-
-### Priority States
-
-**RJ, BA, and ES** were selected as priority delivery states based on
-their below-benchmark delivery performance combined with meaningful
-revenue exposure.
+- This analysis is **correlational**, not causal — it identifies
+  *where* delivery and quality issues occur, not their root causes
+  (e.g., specific carrier performance, warehouse location, or seller
+  fulfillment practices).
+- **ES has a smaller order volume** than RJ and BA, so its revenue
+  exposure estimate carries more uncertainty than the other two
+  priority states.
+- **Seasonality was not controlled for.** Delivery delays may cluster
+  around peak shopping periods, which could overstate or understate
+  a state's underlying performance.
+- **Repeat purchase rate** is reported as a headline metric but not
+  deeply investigated here — it's flagged as an area for separate
+  analysis rather than assumed to be delivery/quality-driven.
+- **Next step:** incorporate carrier/logistics-partner data (if
+  available) to determine whether delivery delays are seller-side or
+  logistics-side, which would sharpen the P0–P2 recommendations from
+  "fix delivery in this state" to a specific operational cause.
 
 ---
 
-## 03 — Quality & Category
+## Tools
 
-### Purpose
-
-Determine whether weaker customer satisfaction is primarily associated
-with delivery performance or whether certain product categories have
-additional quality concerns.
-
-### Key Finding
-
-**Office Furniture** was identified as the primary category-level
-quality concern.
-
-| Measure | Review Score |
-|---|---:|
-| Overall | **3.62** |
-| On-time orders | **3.76** |
-| Platform average | **4.09** |
-
-The category improves when orders are delivered on time, but remains
-below the platform average.
-
-This suggests that delivery performance does not fully explain the
-category's weaker customer satisfaction and that a separate
-product/seller quality investigation is warranted.
+**SQL Server · SSMS · Power BI · DAX · Power Query**
 
 ---
 
-## 04 — Priority Actions & Recommendations
+## Data Source
 
-The final page translates the analytical findings into a prioritized
-action plan.
-
-### P0 — Fix RJ Delivery Performance
-
-Investigate the operational drivers behind RJ's below-benchmark
-delivery performance and address the highest-impact causes of delay.
-
-### P1 — Fix BA Delivery Performance
-
-Investigate delivery bottlenecks in BA and prioritize improvements
-toward the national benchmark.
-
-### P2 — Fix ES Delivery Performance
-
-Investigate delivery performance in ES given its combination of
-below-benchmark reliability and meaningful revenue exposure.
-
-### P3 — Investigate Office Furniture Quality
-
-Investigate category-level quality drivers because Office Furniture
-remains below the platform review average even when orders are
-delivered on time.
+This project uses the [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+(Kaggle). The raw dataset is not included in this repository — see
+`documentation/data-model.md` for details on the tables used and how
+they were transformed.
 
 ---
 
-# Key Findings
-
-| Area | Finding |
-|---|---|
-| Delivery | **93.23%** of eligible orders were delivered on time |
-| Delivery gap | **6.77%** were not delivered on time |
-| Revenue exposure | **$1.74M / 10.86%** of revenue associated with deliveries that were not on time |
-| Customer experience | Review scores fall from **4.29 → 2.27 → 1.75** across on-time, late, and undelivered outcomes |
-| Delivery priority | **RJ, BA, and ES** identified for logistics intervention |
-| Category quality | **Office Furniture: 3.62 overall / 3.76 on-time** |
-
----
-
-# Business Recommendation
-
-The analysis supports a **two-track improvement strategy**.
-
-### 1. Prioritize Delivery Performance
-
-Focus operational investigation on **RJ, BA, and ES**, where delivery
-performance is below the national benchmark and the associated revenue
-base makes improvement more consequential.
-
-### 2. Investigate Product/Seller Quality
-
-Treat **Office Furniture** as a separate quality problem rather than
-assuming delivery is the sole driver of customer dissatisfaction.
-
-This distinction prevents Olist from applying a single logistics
-solution to problems that may have different underlying causes.
-
----
-
-# Technical Stack
-
-### SQL Server / SSMS
-- Analytical data modeling
-- SQL views
-- Order-level and order-item-level data preparation
-- Delivery-status derivation
-- Review deduplication
-- Payment aggregation
-- Table joins
-
-### Power BI
-- Data modeling
-- Interactive dashboard development
-- KPI cards
-- Analytical visualizations
-- Cross-filtering
-- Executive reporting
-
-### DAX
-- KPI development
-- Delivery performance measures
-- Revenue exposure measures
-- Customer metrics
-- Review-score analysis
-- Benchmark/variance analysis
-
-### Power Query
-- Data transformation
-- Data preparation
-- Loading and shaping data for the Power BI model
-
----
-
-# Skills Demonstrated
-
-- SQL data modeling
-- Relational joins and aggregation
-- Window functions
-- Data transformation
-- Power BI data modeling
-- DAX measure development
-- KPI design
-- Data visualization
-- Exploratory data analysis
-- Geographic segmentation
-- Revenue-risk analysis
-- Customer satisfaction analysis
-- Category benchmarking
-- Root-cause analysis
-- Business prioritization
-- Data storytelling
-- Recommendation development
-
----
-
-# Dashboard Preview
-
-## Overview
-
-![Overview](screenshots/overview.png)
-
-## Delivery Performance
-
-![Delivery Performance](screenshots/delivery-performance.png)
-
-## Quality & Category
-
-![Quality & Category](screenshots/quality-category.png)
-
-## Recommendations
-
-![Recommendations](screenshots/recommendations.png)
-
----
-
-# Repository Structure
+## Repository Structure
 
 ```text
 olist-delivery-quality-analysis/
 │
 ├── README.md
-│
 ├── dashboard/
-│   └── Olist_Delivery_Quality_Analysis.pbix
-│
-├── screenshots/
-│   ├── overview.png
-│   ├── delivery-performance.png
-│   ├── quality-category.png
-│   └── recommendations.png
-│
+│   ├── Olist_Delivery_Quality_Analysis.pbix
+│   └── screenshots/
+│       ├── overview.png
+│       ├── delivery-performance.png
+│       ├── quality-category.png
+│       └── recommendations.png
 ├── sql/
 │   └── final_views.sql
-│
 ├── dax/
 │   └── measures.md
-│
 └── documentation/
     └── data-model.md
+```
